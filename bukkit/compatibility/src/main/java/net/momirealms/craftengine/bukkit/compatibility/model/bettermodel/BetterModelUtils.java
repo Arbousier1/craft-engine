@@ -1,18 +1,18 @@
 package net.momirealms.craftengine.bukkit.compatibility.model.bettermodel;
 
 import kr.toxicity.model.api.BetterModel;
+import kr.toxicity.model.api.bukkit.BukkitAdapter;
 import kr.toxicity.model.api.data.renderer.ModelRenderer;
 import org.bukkit.entity.Entity;
 
 public final class BetterModelUtils {
-
     private BetterModelUtils() {}
-
+    
     public static void bindModel(Entity base, String id) {
-        ModelRenderer renderer = BetterModel.plugin().modelManager().model(id);
+        ModelRenderer renderer = BetterModel.platform().modelManager().model(id);
         if (renderer == null) {
             throw new NullPointerException("Could not find BetterModel blueprint " + id);
         }
-        renderer.create(base);
+        renderer.create(BukkitAdapter.adapt(base));
     }
 }
