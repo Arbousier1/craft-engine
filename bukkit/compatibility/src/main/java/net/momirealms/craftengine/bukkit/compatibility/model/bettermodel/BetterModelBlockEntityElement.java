@@ -1,6 +1,7 @@
 package net.momirealms.craftengine.bukkit.compatibility.model.bettermodel;
 
 import kr.toxicity.model.api.BetterModel;
+import kr.toxicity.model.api.bukkit.BukkitAdapter;
 import kr.toxicity.model.api.data.renderer.ModelRenderer;
 import kr.toxicity.model.api.tracker.DummyTracker;
 import kr.toxicity.model.api.tracker.TrackerModifier;
@@ -19,16 +20,18 @@ public class BetterModelBlockEntityElement implements BlockEntityElement {
     public BetterModelBlockEntityElement(World world, BlockPos pos, BetterModelBlockEntityElementConfig config) {
         this.config = config;
         Vector3f position = config.position();
-        this.location = new Location((org.bukkit.World) world.platformWorld(), pos.x() + position.x, pos.y() + position.y, pos.z() + position.z, config.yaw(), config.pitch());
+        this.location = new Location((org.bukkit.World) world.platformWorld(), 
+                pos.x() + position.x, pos.y() + position.y, pos.z() + position.z, 
+                config.yaw(), config.pitch());
         this.dummyTracker = createDummyTracker();
     }
 
     private DummyTracker createDummyTracker() {
-        ModelRenderer modelRenderer = BetterModel.plugin().modelManager().model(this.config.model());
+        ModelRenderer modelRenderer = BetterModel.platform().modelManager().model(this.config.model());
         if (modelRenderer == null) {
             return null;
         } else {
-            return modelRenderer.create(this.location, TrackerModifier.builder()
+            return modelRenderer.create(BukkitAdapter.adapt(this.location), TrackerModifier.builder()
                     .sightTrace(this.config.sightTrace())
                     .build());
         }
@@ -37,14 +40,14 @@ public class BetterModelBlockEntityElement implements BlockEntityElement {
     @Override
     public void hide(Player player) {
         if (this.dummyTracker != null) {
-            this.dummyTracker.remove((org.bukkit.entity.Player) player.platformPlayer());
+            this.dummyTracker.remove(BukkitAdapter.adapt((org.bukkit.entity.Player) player.platformPlayer()));
         }
     }
 
     @Override
     public void show(Player player) {
         if (this.dummyTracker != null) {
-            this.dummyTracker.spawn((org.bukkit.entity.Player) player.platformPlayer());
+            this.dummyTracker.spawn(BukkitAdapter.adapt((org.bukkit.entity.Player) player.platformPlayer()));
         }
     }
 
